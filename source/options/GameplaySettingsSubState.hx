@@ -101,7 +101,7 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		option.displayFormat = '%vms';
 		option.scrollSpeed = 15;
 		option.minValue = 15;
-		option.maxValue = 45;
+		option.maxValue = 170;
 		addOption(option);
 
 		var option:Option = new Option('Good Hit Window',
@@ -112,7 +112,7 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		option.displayFormat = '%vms';
 		option.scrollSpeed = 30;
 		option.minValue = 15;
-		option.maxValue = 90;
+		option.maxValue = 170;
 		addOption(option);
 
 		var option:Option = new Option('Bad Hit Window',
@@ -123,7 +123,7 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		option.displayFormat = '%vms';
 		option.scrollSpeed = 60;
 		option.minValue = 15;
-		option.maxValue = 135;
+		option.maxValue = 170;
 		addOption(option);
 
 		var option:Option = new Option('Safe Frames',
