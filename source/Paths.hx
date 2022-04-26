@@ -240,11 +240,9 @@ class Paths
 	
 	static public function getTextFromFile(key:String, ?ignoreMods:Bool = false):String
 	{
-		#if sys
 		#if MODS_ALLOWED
 		if (!ignoreMods && FileSystem.exists(modFolders(key)))
 			return File.getContent(modFolders(key));
-		#end
 
 		if (FileSystem.exists(SUtil.getPath() + getPreloadPath(key)))
 			return File.getContent(SUtil.getPath() + getPreloadPath(key));
@@ -335,6 +333,7 @@ class Paths
 			if(!currentTrackedAssets.exists(modKey)) {
 				var newBitmap:BitmapData = BitmapData.fromFile(modKey);
 				var newGraphic:FlxGraphic = FlxGraphic.fromBitmapData(newBitmap, false, modKey);
+				newGraphic.persist = true;
 				currentTrackedAssets.set(modKey, newGraphic);
 			}
 			localTrackedAssets.push(modKey);
@@ -346,6 +345,7 @@ class Paths
 		if (OpenFlAssets.exists(path, IMAGE)) {
 			if(!currentTrackedAssets.exists(path)) {
 				var newGraphic:FlxGraphic = FlxG.bitmap.add(path, false, path);
+				newGraphic.persist = true;
 				currentTrackedAssets.set(path, newGraphic);
 			}
 			localTrackedAssets.push(path);
@@ -358,27 +358,30 @@ class Paths
 	public static var currentTrackedSounds:Map<String, Sound> = [];
 	public static function returnSound(path:String, key:String, ?library:String) {
 		#if MODS_ALLOWED
-		var file:String = modsSounds(path, key);
-		if(FileSystem.exists(file)) {
+		var modFile:String = modsSounds(path, key);
+		if(FileSystem.exists(modFile)) {
+			if(!currentTrackedSounds.exists(modFile)) {
+				currentTrackedSounds.set(modFile, Sound.fromFile(modFile));
+			}
+			localTrackedAssets.push(key);
+			return currentTrackedSounds.get(modFile);
+		}
+		#end
+
+		var file:String = SUtil.getPath() + getPath('$path/$key.$SOUND_EXT', SOUND, library);
+		if(OpenFlAssets.exists(file)) {
 			if(!currentTrackedSounds.exists(file)) {
+				#if MODS_ALLOWED
 				currentTrackedSounds.set(file, Sound.fromFile(file));
+				#else
+				currentTrackedSounds.set(file, OpenFlAssets.getSound(getPath('$path/$key.$SOUND_EXT', SOUND, library)));
+				#end
 			}
 			localTrackedAssets.push(key);
 			return currentTrackedSounds.get(file);
 		}
-		#end
-		// I hate this so god damn much
-		var gottenPath:String = SUtil.getPath() + getPath('$path/$key.$SOUND_EXT', SOUND, library);	
-		gottenPath = gottenPath.substring(gottenPath.indexOf(':') + 1, gottenPath.length);
-		// trace(gottenPath);
-		if(!currentTrackedSounds.exists(gottenPath)) 
-		#if MODS_ALLOWED
-			currentTrackedSounds.set(gottenPath, Sound.fromFile(gottenPath));
-		#else
-			currentTrackedSounds.set(gottenPath, OpenFlAssets.getSound(getPath('$path/$key.$SOUND_EXT', SOUND, library)));
-		#end
-		localTrackedAssets.push(gottenPath);
-		return currentTrackedSounds.get(gottenPath);
+		trace('oh no its returning null NOOOO');
+		return null;
 	}
 	
 	#if MODS_ALLOWED
